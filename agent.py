@@ -1,50 +1,53 @@
 import re
 from litellm import completion
 
-system_message = {
-    "role": "system",
-    "content": """
+tools = [
+    {
+        "name": "Terminal",
+        "arguments": ["command to execute"],
+        "description": "Use this to execute terminal commands.",
+    },
+    {
+        "name": "List",
+        "arguments": ["options"],
+        "description": "Use this to present a list of options to the user.",
+    },
+    {
+        "name": "Request",
+        "arguments": ["message"],
+        "description": "Use this for requests to the user."
+    },
+    {
+        "name": "Terminate",
+        "arguments": [],
+        "description": "Use this to end the agent process."
+    }
+]
+
+def build_system_message(tools):
+    tool_descriptions = "\n".join([f'{{"name": "{tool["name"]}", "arguments": {tool["arguments"]}, "description": "{tool["description"]}"}}' for tool in tools])
+    return {
+        "role": "system",
+        "content": f"""
 You are a helpful agent.
 
 Tools available to you are:
 
-{
-    "name": "Terminal",
-    "arguments": ["command to execute"],
-    "description": "Use this to execute terminal commands.",
-}
-{
-    "name": "Request",
-    "arguments": ["message"],
-    "description": "Use this for requests to the user."
-}
-{
-    "name": "Terminate",
-    "arguments": [],
-    "description": "Use this to end the agent process."
-}
+{tool_descriptions}
 
 Always respond in the following way. Do not add reasoning or commentary except in the message field:
 
 ```tool
-{
+{{
     "name": "<tool name>",
     "message": "<message>",
     "arguments": ["<tool arguments>"]
-}
+}}
 ```
-                """
-}
+        """
+    }
 
-class Memory:
-    def __init__(self):
-        self.messages = []
-
-    def add_message(self, role, content):
-        self.messages.append({"role": role, "content": content})
-    
-    def get_messages(self):
-        return self.messages
+system_message = build_system_message(tools)
 
 def parse_tool_response(response_message):
     if response_message.startswith("```tool"):
@@ -56,6 +59,16 @@ def parse_tool_response(response_message):
             return None
     else:
         return None
+
+class Memory:
+    def __init__(self):
+        self.messages = []
+
+    def add_message(self, role, content):
+        self.messages.append({"role": role, "content": content})
+    
+    def get_messages(self):
+        return self.messages
 
 class Agent:
     def __init__(self, config):
