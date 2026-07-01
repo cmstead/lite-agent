@@ -1,38 +1,15 @@
 import re
 from litellm import completion
 
-tools = [
-    {
-        "name": "Terminal",
-        "arguments": ["command to execute"],
-        "description": "Use this to execute terminal commands.",
-    },
-    {
-        "name": "List",
-        "arguments": ["options"],
-        "description": "Use this to present a list of options to the user.",
-    },
-    {
-        "name": "Request",
-        "arguments": ["message"],
-        "description": "Use this for requests to the user."
-    },
-    {
-        "name": "Terminate",
-        "arguments": [],
-        "description": "Use this to end the agent process."
-    }
-]
-
 def build_system_message(tools):
-    tool_descriptions = "\n".join([f'{{"name": "{tool["name"]}", "arguments": {tool["arguments"]}, "description": "{tool["description"]}"}}' for tool in tools])
+    tool_descriptions = "\n".join([f'{{"name": "{tool.name}", "arguments": {tool.arguments}, "description": "{tool.description}"}}' for tool in tools])
     return {
         "role": "system",
         "content": f"""
 You are a helpful agent.
 
 Tools available to you are:
-
+```json
 {tool_descriptions}
 
 Always respond in the following way. Do not add reasoning or commentary except in the message field:
@@ -47,8 +24,6 @@ Always respond in the following way. Do not add reasoning or commentary except i
         """
     }
 
-system_message = build_system_message(tools)
-
 def parse_tool_response(response_message):
     if response_message.startswith("```tool"):
         try:
@@ -58,6 +33,7 @@ def parse_tool_response(response_message):
             print(f"Error parsing tool response: {e}")
             return None
     else:
+        print(response_message)
         return None
 
 class Memory:
@@ -71,14 +47,15 @@ class Memory:
         return self.messages
 
 class Agent:
-    def __init__(self, config):
+    def __init__(self, config, tools):
         self.memory = Memory()
         self.config = config
+        self.system_message = build_system_message(tools)
 
     def send_message(self):
         response = completion(
             model = self.config["model"],
-            messages = [system_message] + self.memory.get_messages(),
+            messages = [self.system_message] + self.memory.get_messages(),
             api_base = self.config["api_base"],
         )
 
