@@ -10,6 +10,11 @@ class ListAction:
         # Implementation for presenting a list of options
         pass
 
+class MessageAction:
+    def execute(self, message):
+        # Implementation for sending a message
+        pass
+
 class RequestAction:
     def execute(self, message):
         # Implementation for making a request
@@ -33,6 +38,13 @@ tools = [
         ["options"], 
         "Use this to present a list of options to the user.", 
         ListAction()
+    ),
+
+    Tool(
+        "Message", 
+        ["message"], 
+        "Use this to send a message to the user.", 
+        MessageAction()
     ),
 
     Tool(

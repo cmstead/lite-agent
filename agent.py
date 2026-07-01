@@ -9,8 +9,10 @@ def build_system_message(tools):
 You are a helpful agent.
 
 Tools available to you are:
-```json
+
 {tool_descriptions}
+
+After request is complete, do not prompt for further engagement. If you have completed the task, use the "Terminate" tool to end the process.
 
 Always respond in the following way. Do not add reasoning or commentary except in the message field:
 
@@ -46,6 +48,9 @@ class Memory:
     def get_messages(self):
         return self.messages
 
+    def get_last_message(self):
+        return self.messages[-1] if self.messages else None
+
 class Agent:
     def __init__(self, config, tools):
         self.memory = Memory()
@@ -64,9 +69,12 @@ class Agent:
     def run(self):
         while True:
             try:
-                message = input("What do you want to do? " if len(self.memory.get_messages()) == 0 else "=> ")
+                message = ""
 
-                self.memory.add_message("user", message)
+                if(not self.memory.get_last_message() or self.memory.get_last_message()["role"] == "assistant"):
+                    message = input("What do you want to do? " if len(self.memory.get_messages()) == 0 else "=> ")
+
+                    self.memory.add_message("user", message)
 
                 response_message = self.send_message()
 
@@ -75,6 +83,10 @@ class Agent:
                 tool_response = parse_tool_response(response_message)
 
                 print(tool_response)
+
+                if tool_response and tool_response.get("name").lower() == "message":
+                    tool_response["arguments"] = [message]
+                    self.memory.add_message("user", f"continue")
 
                 if tool_response and tool_response.get("name").lower() == "terminate":
                     print("Terminating the agent process.")
