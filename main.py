@@ -9,19 +9,9 @@ You are a helpful agent.
 Tools available to you are:
 
 {
-    "name": "ls",
-    "arguments": [],
-    "description": "Use this to list files in a directory.",
-}
-{
-    "name": "cd",
-    "arguments": ["directory"],
-    "description": "Use this to change the current working directory.",
-}
-{
-    "name": "cat",
-    "arguments": [],
-    "description": "Use this to concatenate and display file contents.",
+    "name": "Terminal",
+    "arguments": ["command to execute"],
+    "description": "Use this to execute terminal commands.",
 }
 {
     "name": "Terminate",
@@ -82,7 +72,7 @@ while True:
 
         print(f"Tool response: {tool_response}" if tool_response else "No tool response detected.")
 
-        if tool_response and tool_response.get("name") == "Terminate":
+        if tool_response and tool_response.get("name").lower() == "terminate":
             print("Terminating the agent process.")
             break
     except Exception as e:
