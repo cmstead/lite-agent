@@ -55,6 +55,7 @@ class Agent:
     def __init__(self, config, tools):
         self.memory = Memory()
         self.config = config
+        self.tools = tools
         self.system_message = build_system_message(tools)
 
     def send_message(self):
@@ -65,6 +66,13 @@ class Agent:
         )
 
         return response.choices[0].message.content
+
+    def print_tool_message(self, tool_response):
+        if tool_response and tool_response.get("message"):
+            print(f"Agent: {tool_response.get('message')}")
+            
+        if tool_response and tool_response.get("description"):
+            print(f"Agent: {tool_response.get('description')}")
 
     def run(self):
         while True:
@@ -82,16 +90,23 @@ class Agent:
 
                 tool_response = parse_tool_response(response_message)
 
-                print(tool_response)
+                self.print_tool_message(tool_response)
 
                 if tool_response and tool_response.get("name").lower() == "message":
                     tool_response["arguments"] = [message]
-                    self.memory.add_message("user", f"continue")
-
-                if tool_response and tool_response.get("name").lower() == "terminate":
+                    self.memory.add_message("user", f"terminate session")
+                elif tool_response and tool_response.get("name").lower() == "terminate":
                     print("Terminating the agent process.")
                     break
-                
+                elif tool_response:
+                    tool = next((t for t in self.tools if t.name.lower() == tool_response.get("name").lower()), None)
+                    if tool:
+                        tool.execute(tool_response.get("arguments", []))
+                    else:
+                        print(f"Tool not found: {tool_response.get('name')}")
+                else:
+                    print("No valid tool response received. Please try again.")
+
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break

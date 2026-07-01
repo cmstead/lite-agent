@@ -1,24 +1,24 @@
 from tool import Tool
 
 class TerminalAction:
-    def execute(self, command):
-        # Implementation for executing a terminal command
-        pass
+    def execute(self, args):
+        for item in args:
+            print(f"Executing terminal command: {item}")
 
 class ListAction:
-    def execute(self, options):
-        # Implementation for presenting a list of options
-        pass
+    def execute(self, args):
+        for item in args:
+            print(f"- {item}")
 
 class MessageAction:
-    def execute(self, message):
-        # Implementation for sending a message
-        pass
+    def execute(self, args):
+        for message in args:
+            print(f"{message}")
 
 class RequestAction:
-    def execute(self, message):
-        # Implementation for making a request
-        pass
+    def execute(self, args):
+        for request in args:
+            print(f"Making request: {request}")
 
 class TerminateAction:
     def execute(self):
@@ -27,35 +27,35 @@ class TerminateAction:
 
 tools = [
     Tool(
-        "Terminal", 
+        "terminal", 
         ["command to execute"], 
         "Use this to execute terminal commands.", 
         TerminalAction()
     ),
-    
+
     Tool(
-        "List", 
+        "list", 
         ["options"], 
         "Use this to present a list of options to the user.", 
         ListAction()
     ),
 
     Tool(
-        "Message", 
+        "message", 
         ["message"], 
         "Use this to send a message to the user.", 
         MessageAction()
     ),
 
     Tool(
-        "Request", 
+        "request", 
         ["message"], 
         "Use this for requests to the user.", 
         RequestAction()
     ),
 
     Tool(
-        "Terminate", 
+        "terminate", 
         [], 
         "Use this to end the agent process.", 
         TerminateAction()
