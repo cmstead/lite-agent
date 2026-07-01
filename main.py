@@ -14,6 +14,11 @@ Tools available to you are:
     "description": "Use this to execute terminal commands.",
 }
 {
+    "name": "Request",
+    "arguments": ["message"],
+    "description": "Use this for requests to the user."
+}
+{
     "name": "Terminate",
     "arguments": [],
     "description": "Use this to end the agent process."
@@ -48,7 +53,7 @@ messages = []
 
 while True:
     try:
-        message = input("What do you want to do? ")
+        message = input("What do you want to do? " if len(messages) == 0 else "=> ")
 
         messages.append({
             "role": "user",
