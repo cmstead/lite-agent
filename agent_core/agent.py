@@ -1,44 +1,7 @@
-import re
-import json
 from litellm import completion
 from agent_core import core_tools
-
-def build_system_message(tools):
-    tool_descriptions = "\n".join([f'{{"name": "{tool.name}", "arguments": {tool.arguments}, "description": "{tool.description}"}}' for tool in tools])
-    return {
-        "role": "system",
-        "content": f"""
-You are a helpful agent.
-
-After request is complete, do not prompt for further engagement. If you have completed the task, use the "Terminate" tool to end the process.
-
-Always respond in the following way. Do not add reasoning or commentary except in the message field:
-
-```tool
-{{
-    "name": "<tool name>",
-    "message": "<message>",
-    "arguments": ["<tool arguments>"]
-}}
-```
-
-Tools available to you are:
-
-{tool_descriptions}
-        """
-    }
-
-def parse_tool_response(response_message):
-    if response_message.startswith("```tool"):
-        try:
-            tool_response = re.split(r'```(tool)?', response_message)[2].strip()
-            return json.loads(tool_response)
-        except Exception as e:
-            print(f"Error parsing tool response: {e}")
-            return None
-    else:
-        print(response_message)
-        return None
+from agent_core.tool_utils import parse_tool_response, print_tool_message
+from agent_core.system_message import build_system_message
 
 class Memory:
     def __init__(self):
@@ -54,11 +17,11 @@ class Memory:
         return self.messages[-1] if self.messages else None
 
 class Agent:
-    def __init__(self, config, tools):
+    def __init__(self, config, tools, agent_prompt=None):
         self.memory = Memory()
         self.config = config
         self.tools = tools + core_tools.tools
-        self.system_message = build_system_message(self.tools)
+        self.system_message = build_system_message(self.tools, agent_prompt)
 
     def send_message(self):
         response = completion(
@@ -69,12 +32,23 @@ class Agent:
 
         return response.choices[0].message.content
 
-    def print_tool_message(self, tool_response):
-        if tool_response and tool_response.get("message"):
-            print(f"Agent: {tool_response.get('message')}")
-            
-        if tool_response and tool_response.get("description"):
-            print(f"Agent: {tool_response.get('description')}")
+    def handle_tool_response(self, tool_response):
+        if tool_response and tool_response.get("name").lower() == "message":
+            tool_response["arguments"] = [message]
+            self.memory.add_message("user", f"terminate session")
+        elif tool_response:
+            tool = next((t for t in self.tools if t.name.lower() == tool_response.get("name").lower()), None)
+            if tool:
+                result = tool.execute(tool_response.get("arguments", []))
+                if result is not None:
+                    print(f"{result}")
+                    self.memory.add_message("user", f"Tool {tool.name} executed with result: {result}")
+            else:
+                print(f"Tool not found: {tool_response.get('name')}")
+                self.memory.add_message("user", f"Tool not found: {tool_response.get('name')}")
+        else:
+            self.memory.add_message("user", f"No valid tool response received. Please try again.")
+
 
     def run(self):
         while True:
@@ -92,26 +66,13 @@ class Agent:
 
                 tool_response = parse_tool_response(response_message)
 
-                self.print_tool_message(tool_response)
+                print_tool_message(tool_response)
 
-                if tool_response and tool_response.get("name").lower() == "message":
-                    tool_response["arguments"] = [message]
-                    self.memory.add_message("user", f"terminate session")
-                elif tool_response and tool_response.get("name").lower() == "terminate":
+                if tool_response and tool_response.get("name").lower() == "terminate":
                     print("Terminating the agent process.")
                     break
-                elif tool_response:
-                    tool = next((t for t in self.tools if t.name.lower() == tool_response.get("name").lower()), None)
-                    if tool:
-                        result = tool.execute(tool_response.get("arguments", []))
-                        if result is not None:
-                            print(f"{result}")
-                            self.memory.add_message("user", f"Tool {tool.name} executed with result: {result}")
-                    else:
-                        print(f"Tool not found: {tool_response.get('name')}")
-                        self.memory.add_message("user", f"Tool not found: {tool_response.get('name')}")
-                else:
-                    print("No valid tool response received. Please try again.")
+
+                self.handle_tool_response(tool_response)
 
             except Exception as e:
                 print(f"An error occurred: {e}")
