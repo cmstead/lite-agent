@@ -101,9 +101,13 @@ class Agent:
                 elif tool_response:
                     tool = next((t for t in self.tools if t.name.lower() == tool_response.get("name").lower()), None)
                     if tool:
-                        tool.execute(tool_response.get("arguments", []))
+                        result = tool.execute(tool_response.get("arguments", []))
+                        if result is not None:
+                            print(f"{result}")
+                            self.memory.add_message("user", f"Tool {tool.name} executed with result: {result}")
                     else:
                         print(f"Tool not found: {tool_response.get('name')}")
+                        self.memory.add_message("user", f"Tool not found: {tool_response.get('name')}")
                 else:
                     print("No valid tool response received. Please try again.")
 
