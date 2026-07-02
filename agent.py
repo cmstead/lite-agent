@@ -1,5 +1,6 @@
 import re
 from litellm import completion
+import core_tools
 
 def build_system_message(tools):
     tool_descriptions = "\n".join([f'{{"name": "{tool.name}", "arguments": {tool.arguments}, "description": "{tool.description}"}}' for tool in tools])
@@ -55,8 +56,8 @@ class Agent:
     def __init__(self, config, tools):
         self.memory = Memory()
         self.config = config
-        self.tools = tools
-        self.system_message = build_system_message(tools)
+        self.tools = tools + core_tools.tools
+        self.system_message = build_system_message(self.tools)
 
     def send_message(self):
         response = completion(
