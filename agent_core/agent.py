@@ -1,4 +1,5 @@
 import re
+import json
 from litellm import completion
 from agent_core import core_tools
 
@@ -31,7 +32,7 @@ def parse_tool_response(response_message):
     if response_message.startswith("```tool"):
         try:
             tool_response = re.split(r'```(tool)?', response_message)[2].strip()
-            return eval(tool_response)
+            return json.loads(tool_response)
         except Exception as e:
             print(f"Error parsing tool response: {e}")
             return None
