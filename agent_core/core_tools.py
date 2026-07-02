@@ -1,4 +1,4 @@
-from tool import Tool
+from agent_core.tool import Tool
 
 class ListAction:
     def execute(self, args):

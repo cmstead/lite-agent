@@ -1,6 +1,6 @@
 import re
 from litellm import completion
-import core_tools
+from agent_core import core_tools
 
 def build_system_message(tools):
     tool_descriptions = "\n".join([f'{{"name": "{tool.name}", "arguments": {tool.arguments}, "description": "{tool.description}"}}' for tool in tools])
@@ -8,10 +8,6 @@ def build_system_message(tools):
         "role": "system",
         "content": f"""
 You are a helpful agent.
-
-Tools available to you are:
-
-{tool_descriptions}
 
 After request is complete, do not prompt for further engagement. If you have completed the task, use the "Terminate" tool to end the process.
 
@@ -24,6 +20,10 @@ Always respond in the following way. Do not add reasoning or commentary except i
     "arguments": ["<tool arguments>"]
 }}
 ```
+
+Tools available to you are:
+
+{tool_descriptions}
         """
     }
 

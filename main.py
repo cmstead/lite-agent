@@ -1,4 +1,4 @@
-from agent import Agent
+from agent_core.agent import Agent
 from tools import tools
 
 agent = Agent({

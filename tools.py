@@ -1,5 +1,5 @@
 import subprocess
-from tool import Tool
+from agent_core.tool import Tool
 
 class TerminalAction:
     def execute(self, args):
