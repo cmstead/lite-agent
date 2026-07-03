@@ -42,8 +42,6 @@ class Agent:
                 result = tool.execute(tool_response.get("arguments", []))
                 if result is not None:
                     self.memory.add_message("user", f"Tool {tool.name} executed with result: {result}")
-                else:
-                    self.memory.add_message("user", f"Tool {tool.name} executed successfully.")
             else:
                 print(f"Tool not found: {tool_response.get('name')}")
                 self.memory.add_message("user", f"Tool not found: {tool_response.get('name')}")
@@ -60,7 +58,7 @@ class Agent:
                     message = input("What do you want to do? " if len(self.memory.get_messages()) == 0 else "=> ")
 
                     self.memory.add_message("user", message)
-
+                
                 response_message = self.send_message()
 
                 self.memory.add_message("assistant", response_message)
