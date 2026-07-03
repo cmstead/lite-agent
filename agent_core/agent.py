@@ -41,8 +41,9 @@ class Agent:
             if tool:
                 result = tool.execute(tool_response.get("arguments", []))
                 if result is not None:
-                    print(f"{result}")
                     self.memory.add_message("user", f"Tool {tool.name} executed with result: {result}")
+                else:
+                    self.memory.add_message("user", f"Tool {tool.name} executed successfully.")
             else:
                 print(f"Tool not found: {tool_response.get('name')}")
                 self.memory.add_message("user", f"Tool not found: {tool_response.get('name')}")

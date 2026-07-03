@@ -1,9 +1,14 @@
+import platform
+
+
 def build_system_message(tools, prompt=None):
     tool_descriptions = "\n".join([f'{{"name": "{tool.name}", "arguments": {tool.arguments}, "description": "{tool.description}"}}' for tool in tools])
     return {
         "role": "system",
         "content": f"""
 {prompt if prompt else "You are a helpful agent."}
+
+You are running on a {platform.system()} system with Python {platform.python_version()}.
 
 After request is complete, do not prompt for further engagement. If you have completed the task, use the "Terminate" tool to end the process.
 

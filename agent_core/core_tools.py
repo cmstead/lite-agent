@@ -17,6 +17,10 @@ class ChooseAction:
         responses = inquirer.prompt(prompts)
         return responses['choice'] if responses else None
 
+class QuestionAction:
+    def execute(self, args):
+        return input(f"{args[0] if args else 'Question'}: ")
+
 class MessageAction:
     def execute(self, args):
         for message in args:
@@ -40,6 +44,13 @@ tools = [
         ["message"], 
         "Use this to send a message to the user.", 
         MessageAction()
+    ),
+
+    Tool(
+        "question", 
+        ["question"], 
+        "Use this to ask a question to the user and get their input.", 
+        QuestionAction()
     ),
 
     Tool(

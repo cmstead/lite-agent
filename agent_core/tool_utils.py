@@ -2,7 +2,7 @@ import re
 import json
 
 def parse_tool_response(response_message):
-    if response_message.startswith("```tool"):
+    if re.match(r"```tool", response_message):
         try:
             tool_response = re.split(r'```(tool)?', response_message)[2].strip()
             return json.loads(tool_response)
