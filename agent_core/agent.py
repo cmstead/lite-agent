@@ -72,8 +72,6 @@ class Agent:
                 print_tool_message(tool_response)
 
                 if tool_response and tool_response.get("name").lower() == "terminate":
-                    print(tool_response.get("arguments")[0] if tool_response.get("arguments") else "Terminating the agent process.")
-                    print("Terminating the agent process.")
                     break
 
                 self.handle_tool_response(tool_response, message)
