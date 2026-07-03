@@ -1,3 +1,4 @@
+import random
 from litellm import completion
 from agent_core import core_tools
 from agent_core.tool_utils import parse_tool_response, print_tool_message
@@ -17,11 +18,13 @@ class Memory:
         return self.messages[-1] if self.messages else None
 
 class Agent:
+
     def __init__(self, config, tools, agent_prompt=None):
         self.memory = Memory()
         self.config = config
         self.tools = tools + core_tools.tools
         self.system_message = build_system_message(self.tools, agent_prompt)
+        self.waiting_options = ["cogitating", "thinking", "processing", "pondering", "analyzing", "evaluating", "considering", "reflecting", "deliberating"]
 
     def send_message(self):
         response = completion(
@@ -58,7 +61,8 @@ class Agent:
                     message = input("What do you want to do? " if len(self.memory.get_messages()) == 0 else "=> ")
 
                     self.memory.add_message("user", message)
-                
+
+                print(f"{self.waiting_options[random.randrange(len(self.waiting_options))]}...")
                 response_message = self.send_message()
 
                 self.memory.add_message("assistant", response_message)
@@ -68,6 +72,7 @@ class Agent:
                 print_tool_message(tool_response)
 
                 if tool_response and tool_response.get("name").lower() == "terminate":
+                    print(tool_response.get("arguments")[0] if tool_response.get("arguments") else "Terminating the agent process.")
                     print("Terminating the agent process.")
                     break
 

@@ -8,6 +8,7 @@ def parse_tool_response(response_message):
             return json.loads(tool_response)
         except Exception as e:
             print(f"Error parsing tool response: {e}")
+            print(response_message)
             return None
     else:
         print(response_message)

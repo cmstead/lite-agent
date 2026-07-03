@@ -21,11 +21,6 @@ class QuestionAction:
     def execute(self, args):
         return input(f"{args[0] if args else 'Question'}: ")
 
-class MessageAction:
-    def execute(self, args):
-        for message in args:
-            print(f"{message}")
-
 class TerminateAction:
     def execute(self):
         # Implementation for terminating the process
@@ -40,13 +35,6 @@ tools = [
     ),
 
     Tool(
-        "message", 
-        ["message"], 
-        "Use this to send a message to the user.", 
-        MessageAction()
-    ),
-
-    Tool(
         "question", 
         ["question"], 
         "Use this to ask a question to the user and get their input.", 
@@ -55,7 +43,7 @@ tools = [
 
     Tool(
         "terminate", 
-        [], 
+        ["message"], 
         "Use this to end the agent process.", 
         TerminateAction()
     ),
