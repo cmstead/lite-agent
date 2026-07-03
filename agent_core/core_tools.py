@@ -1,9 +1,5 @@
+import inquirer
 from agent_core.tool import Tool
-
-class ListAction:
-    def execute(self, args):
-        for item in args:
-            print(f"- {item}")
 
 class ChooseAction:
     def execute(self, args):
@@ -11,8 +7,15 @@ class ChooseAction:
         if not args or len(args) == 0:
             print("No options provided.")
             return None
-        for item in args:
-            print(f"- {item}")
+        
+        prompts = [inquirer.List(
+            'choice',
+            message="Please choose from the following:",
+            choices=args
+        )]
+
+        responses = inquirer.prompt(prompts)
+        return responses['choice'] if responses else None
 
 class MessageAction:
     def execute(self, args):
@@ -35,13 +38,6 @@ tools = [
         ["options"], 
         "Use this to present a list of options to the user.", 
         ChooseAction()
-    ),
-
-    Tool(
-        "list", 
-        ["options"], 
-        "Use this to present a list of options to the user.", 
-        ListAction()
     ),
 
     Tool(

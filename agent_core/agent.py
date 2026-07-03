@@ -32,7 +32,7 @@ class Agent:
 
         return response.choices[0].message.content
 
-    def handle_tool_response(self, tool_response):
+    def handle_tool_response(self, tool_response, message):
         if tool_response and tool_response.get("name").lower() == "message":
             tool_response["arguments"] = [message]
             self.memory.add_message("user", f"terminate session")
@@ -72,7 +72,7 @@ class Agent:
                     print("Terminating the agent process.")
                     break
 
-                self.handle_tool_response(tool_response)
+                self.handle_tool_response(tool_response, message)
 
             except Exception as e:
                 print(f"An error occurred: {e}")
