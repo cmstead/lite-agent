@@ -3,7 +3,6 @@ from agent_core.tool import Tool
 
 class ChooseAction:
     def execute(self, args):
-        print(args)
         if not args or len(args) == 0:
             print("No options provided.")
             return None
@@ -17,6 +16,21 @@ class ChooseAction:
         responses = inquirer.prompt(prompts)
         return responses['choice'] if responses else None
 
+class ConfirmAction:
+    def execute(self, args):
+        if not args or len(args) == 0:
+            print("No confirmation message provided.")
+            return None
+        
+        prompts = [inquirer.List(
+            'confirmation',
+            message=args[0],
+            choices=["Yes", "No"]
+        )]
+
+        responses = inquirer.prompt(prompts)
+        return responses['confirmation'] if responses else None
+
 class QuestionAction:
     def execute(self, args):
         return input(f"{args[0] if args else 'Question'}: ")
@@ -27,6 +41,13 @@ class TerminateAction:
         pass
 
 tools = [
+    Tool(
+        "confirm", 
+        ["message"], 
+        "Use this to ask the user for confirmation (Yes/No).", 
+        ConfirmAction()
+    ),
+
     Tool(
         "choose", 
         ["options"], 

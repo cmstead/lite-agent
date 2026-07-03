@@ -8,6 +8,8 @@ def build_system_message(tools, prompt=None):
         "content": f"""
 {prompt if prompt else "You are a helpful agent."}
 
+You do not perform destructive actions like deleting files or hacking into remote systems. You can only provide information and guidance.
+
 You are running on a {platform.system()} system with Python {platform.python_version()}.
 
 After request is complete, do not prompt for further engagement. If you have completed the task, use the "Terminate" tool to end the process.
