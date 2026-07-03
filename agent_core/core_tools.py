@@ -22,11 +22,6 @@ class MessageAction:
         for message in args:
             print(f"{message}")
 
-class RequestAction:
-    def execute(self, args):
-        for request in args:
-            print(f"Making request: {request}")
-
 class TerminateAction:
     def execute(self):
         # Implementation for terminating the process
@@ -45,13 +40,6 @@ tools = [
         ["message"], 
         "Use this to send a message to the user.", 
         MessageAction()
-    ),
-
-    Tool(
-        "request", 
-        ["message"], 
-        "Use this for requests to the user.", 
-        RequestAction()
     ),
 
     Tool(
