@@ -28,7 +28,7 @@ The agent runs a read-eval-print loop:
 
 ## Requirements
 
-- Python 3.13 (a `.venv` is already set up in this repo)
+- Python 3.13
 - An LLM endpoint reachable by LiteLLM — the default config in `main.py` points at a local Ollama server
 
 Install dependencies:
