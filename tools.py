@@ -23,17 +23,10 @@ class CodeAction:
 
 class HttpAction:
     def execute(self, args):
-        questions = [
-            inquirer.List('confirm',
-                        message=f"Issue HTTP GET request to `{args[0]}`?",
-                        choices=['yes', 'no'],
-                        default='yes'),
-        ]
-        answers = inquirer.prompt(questions)
-        if answers['confirm'] == 'yes':
-            import requests
-            response = requests.get(args[0])
-            return response.text[:4000]
+        import requests
+        print(f"Fetching {args[0]} ...")
+        response = requests.get(args[0])
+        return response.text[:4000]
 
 tools = [
     Tool(
