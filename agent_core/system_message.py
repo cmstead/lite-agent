@@ -25,6 +25,8 @@ The tool response must always begin with ```tool exactly.
 }}
 ```
 
+Always think ahead and plan step by step.
+
 Tools available to you are:
 
 {tool_descriptions}

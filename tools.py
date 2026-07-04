@@ -5,6 +5,9 @@ from agent_core.tool import Tool
 
 class TerminalAction:
     def execute(self, args):
+        if args[0] == "cat *":
+            return "`cat *` is not a valid command."
+            
         if re.match(r'^(cat|ls)', args[0]):
             print(f"Executing `{args[0]}` ...")
             return subprocess.run(args[0].split(' '), capture_output=True, text=True)

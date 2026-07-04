@@ -45,6 +45,12 @@ class MessageAction:
         
         return "Message displayed successfully."
     
+class PlanAction:
+    def execute(self, args):
+        print("Plan:")
+        for step in args:
+            print(f"-[] {step}")
+
 class TerminateAction:
     def execute(self):
         # Implementation for terminating the process
@@ -70,6 +76,13 @@ tools = [
         ["message_lines"], 
         "Use this to display a message to the user.", 
         MessageAction()
+    ),
+
+    Tool(
+        "plan",
+        ["plan steps"],
+        "Use this to think step by step and build a plan",
+        PlanAction()
     ),
 
     Tool(
