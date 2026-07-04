@@ -1,6 +1,6 @@
 # lite-agent
 
-A minimal, hackable LLM agent loop written in Python. It talks to any model supported by [LiteLLM](https://github.com/BerriAI/litellm) (OpenAI, Ollama, Anthropic, etc.), drives a simple JSON tool-call protocol, and ships with a small set of tools for interacting with the user and the terminal.
+A minimal, hackable LLM agent loop written in Python. It talks to any model supported by [LiteLLM](https://github.com/BerriAI/litellm) (OpenAI, Ollama, Anthropic, etc.), drives a simple JSON tool-call protocol, and ships with a small set of tools for interacting with the user, the terminal, and the web.
 
 ## How it works
 
@@ -68,4 +68,5 @@ The tool's `name`, `arguments`, and `description` are automatically included in 
 ## Notes
 
 - The `terminal` tool asks for interactive confirmation (`yes`/`no`) before running any command — it does not sandbox or validate the command otherwise, so treat it as trusted-user tooling only.
+- The `http` tool allows the agent to perform HTTP GET requests to specified URLs, facilitating data retrieval from web resources.
 - Model responses that don't follow the ` ```tool ` fenced format are printed as-is and treated as having no tool call.
