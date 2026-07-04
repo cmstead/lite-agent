@@ -35,12 +35,28 @@ class QuestionAction:
     def execute(self, args):
         return input(f"{args[0] if args else 'Question'}: ")
 
+class MessageAction:
+    def execute(self, args):
+        if not args or len(args) == 0:
+            print("No message provided.")
+            return None
+        for arg in args:
+            print(f"{arg}")
+        
+        return "Message displayed successfully."
 class TerminateAction:
     def execute(self):
         # Implementation for terminating the process
         pass
 
 tools = [
+    Tool(
+        "choose", 
+        ["options"], 
+        "Use this to present a list of options to the user.", 
+        ChooseAction()
+    ),
+
     Tool(
         "confirm", 
         ["message"], 
@@ -49,10 +65,10 @@ tools = [
     ),
 
     Tool(
-        "choose", 
-        ["options"], 
-        "Use this to present a list of options to the user.", 
-        ChooseAction()
+        "message", 
+        ["message_lines"], 
+        "Use this to display a message to the user.", 
+        MessageAction()
     ),
 
     Tool(
@@ -64,7 +80,7 @@ tools = [
 
     Tool(
         "terminate", 
-        ["message"], 
+        [], 
         "Use this to end the agent process.", 
         TerminateAction()
     ),

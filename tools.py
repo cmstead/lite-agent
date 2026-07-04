@@ -21,12 +21,32 @@ class CodeAction:
         print(f"```code\n{args[0]}\n```")
         return "Code displayed successfully."
 
+class HttpAction:
+    def execute(self, args):
+        questions = [
+            inquirer.List('confirm',
+                        message=f"Issue HTTP GET request to `{args[0]}`?",
+                        choices=['yes', 'no'],
+                        default='yes'),
+        ]
+        answers = inquirer.prompt(questions)
+        if answers['confirm'] == 'yes':
+            import requests
+            response = requests.get(args[0])
+            return response.text
+
 tools = [
     Tool(
         "code", 
         ["code to display"], 
         "Use this to display code snippets.", 
         CodeAction()
+    ),
+    Tool(
+        "http", 
+        ["url to request"], 
+        "Use this to make HTTP GET requests.", 
+        HttpAction()
     ),
     Tool(
         "terminal", 

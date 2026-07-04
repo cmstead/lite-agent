@@ -15,12 +15,13 @@ You are running on a {platform.system()} system with Python {platform.python_ver
 After request is complete, do not prompt for further engagement. If you have completed the task, use the "Terminate" tool to end the process.
 
 Always respond in the following way. Do not add reasoning or commentary except in the message field:
+The tool response must always begin with ```tool exactly.
 
 ```tool
 {{
-    "name": "<tool name>",
+    "name": "<tool_name>",
     "message": "<message>",
-    "arguments": ["<tool arguments>"]
+    "arguments": ["<tool_arguments>"]
 }}
 ```
 

@@ -11,8 +11,8 @@ def parse_tool_response(response_message):
             print(response_message)
             return None
     else:
-        print(response_message)
-        return None
+        print('No tool response found in the message.')
+        return "Unable to process response. No tool response found in message."
 
 def print_tool_message(tool_response):
     if tool_response and tool_response.get("message"):
