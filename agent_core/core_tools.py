@@ -39,11 +39,12 @@ class MessageAction:
     def execute(self, args):
         if not args or len(args) == 0:
             print("No message provided.")
-            return None
+            return "No message displayed."
         for arg in args:
             print(f"{arg}")
         
         return "Message displayed successfully."
+    
 class TerminateAction:
     def execute(self):
         # Implementation for terminating the process

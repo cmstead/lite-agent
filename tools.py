@@ -33,7 +33,7 @@ class HttpAction:
         if answers['confirm'] == 'yes':
             import requests
             response = requests.get(args[0])
-            return response.text
+            return response.text[:4000]
 
 tools = [
     Tool(

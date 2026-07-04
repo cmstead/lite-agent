@@ -10,6 +10,7 @@ class Memory:
 
     def add_message(self, role, content):
         self.messages.append({"role": role, "content": content})
+        self.messages = self.messages[-10:]
     
     def get_messages(self):
         return self.messages
@@ -36,10 +37,7 @@ class Agent:
         return response.choices[0].message.content
 
     def handle_tool_response(self, tool_response, message):
-        if tool_response and tool_response.get("name").lower() == "message":
-            tool_response["arguments"] = [message]
-            self.memory.add_message("user", f"terminate session")
-        elif tool_response:
+        if tool_response:
             tool = next((t for t in self.tools if t.name.lower() == tool_response.get("name").lower()), None)
             if tool:
                 result = tool.execute(tool_response.get("arguments", []))
