@@ -1,5 +1,8 @@
+import dotenv
 from agent_core.agent import Agent
 from tools import tools
+
+dotenv.load_dotenv()
 
 agent = Agent({
     "model": "ollama/qwen2.5-coder:14b",

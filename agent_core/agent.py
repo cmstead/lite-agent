@@ -30,7 +30,7 @@ class Agent:
         response = completion(
             model = self.config["model"],
             messages = [self.system_message] + self.memory.get_messages(),
-            api_base = self.config["api_base"],
+            api_base = self.config["api_base"] if "api_base" in self.config else None,
         )
 
         return response.choices[0].message.content
