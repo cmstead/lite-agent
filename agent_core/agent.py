@@ -7,6 +7,9 @@ class Memory:
     def __init__(self):
         self.messages = []
 
+    def clear(self):
+        self.messages = []
+
     def add_message(self, role, content):
         self.messages.append({"role": role, "content": content})
         self.messages = self.messages[-10:]
@@ -59,6 +62,10 @@ class Agent:
                 if(not self.memory.get_last_message() or self.memory.get_last_message()["role"] == "assistant"):
                     message = input("What do you want to do? " if len(self.memory.get_messages()) == 0 else "=> ")
 
+                    if message.lower() == "/bye":
+                        print('Goodbye!')
+                        break
+
                     self.memory.add_message("user", message)
 
                 print(f"{self.waiting_options[random.randrange(len(self.waiting_options))]}...")
@@ -71,7 +78,8 @@ class Agent:
                 print_tool_message(tool_response)
 
                 if tool_response and tool_response.get("name").lower() == "terminate":
-                    break
+                    self.memory.clear()
+                    print("")
 
                 self.handle_tool_response(tool_response, message)
 

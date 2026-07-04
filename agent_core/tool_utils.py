@@ -9,7 +9,7 @@ def parse_tool_response(response_message):
         except Exception as e:
             print(f"Error parsing tool response: {e}")
             print(response_message)
-            return None
+            return "Invalid tool call."
     else:
         print('No tool response found in the message.')
         return "Unable to process response. No tool response found in message."

@@ -52,7 +52,7 @@ class PlanAction:
             print(f"-[] {step}")
 
 class TerminateAction:
-    def execute(self):
+    def execute(self, args):
         # Implementation for terminating the process
         pass
 
