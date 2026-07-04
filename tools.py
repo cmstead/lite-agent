@@ -1,9 +1,14 @@
+import re
 import subprocess
 import inquirer
 from agent_core.tool import Tool
 
 class TerminalAction:
     def execute(self, args):
+        if re.match(r'^(cat|ls)', args[0]):
+            print(f"Executing `{args[0]}` ...")
+            return subprocess.run(args[0].split(' '), capture_output=True, text=True)
+        
         questions = [
             inquirer.List('confirm',
                         message=f"Allow action `{args[0]}`?",
