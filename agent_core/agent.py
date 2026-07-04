@@ -3,7 +3,6 @@ from litellm import completion
 from agent_core import core_tools
 from agent_core.tool_utils import parse_tool_response, print_tool_message
 from agent_core.system_message import build_system_message
-
 class Memory:
     def __init__(self):
         self.messages = []
@@ -20,12 +19,14 @@ class Memory:
 
 class Agent:
 
-    def __init__(self, config, tools, agent_prompt=None):
+    def __init__(self, config, tools, agent_prompt=None, initial_message=None):
         self.memory = Memory()
         self.config = config
         self.tools = tools + core_tools.tools
         self.system_message = build_system_message(self.tools, agent_prompt)
         self.waiting_options = ["cogitating", "thinking", "processing", "pondering", "analyzing", "evaluating", "considering", "reflecting", "deliberating"]
+        if initial_message:
+            self.memory.add_message("user", initial_message)
 
     def send_message(self):
         response = completion(
