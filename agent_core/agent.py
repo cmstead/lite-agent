@@ -71,6 +71,11 @@ class Agent:
                         print('Goodbye!')
                         break
 
+                    if message.lower() == "/clear":
+                        self.memory.clear()
+                        print("Memory cleared.")
+                        continue
+                        
                     self.memory.add_message("user", message)
 
                 print(f"{self.waiting_options[random.randrange(len(self.waiting_options))]}...")
