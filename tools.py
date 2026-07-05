@@ -24,6 +24,26 @@ class TerminalAction:
         else:
             return "Action cancelled by user."
 
+class ReadFileAction:
+    def execute(self, args):
+        print(f"Reading {args[0]} ...")
+        try:
+            with open(args[0], 'r') as file:
+                content = file.read()
+                return content[:4000]
+        except Exception as e:
+            return f"Error reading file: {e}"
+
+class WriteFileAction:
+    def execute(self, args):
+        print(f"Writing to {args[0]} ...")
+        try:
+            with open(args[0], 'w') as file:
+                file.write(args[1])
+                return f"Successfully wrote to {args[0]}"
+        except Exception as e:
+            return f"Error writing to file: {e}"
+
 class CodeAction:
     def execute(self, args):
         print(f"```code\n{args[0]}\n```")
@@ -48,6 +68,18 @@ tools = [
         ["url to request"], 
         "Use this to make HTTP GET requests.", 
         HttpAction()
+    ),
+    Tool(
+        "read_file", 
+        ["file path"], 
+        "Use this to read the contents of a file.", 
+        ReadFileAction()
+    ),
+    Tool(
+        "write_file", 
+        ["file path", "content to write"], 
+        "Use this to write content to a file.", 
+        WriteFileAction()
     ),
     Tool(
         "terminal", 

@@ -14,6 +14,8 @@ You are running on a {platform.system()} system with Python {platform.python_ver
 
 After request is complete, do not prompt for further engagement. If you have completed the task, use the "Terminate" tool to end the process.
 
+Before acting, use the plan tool and think ahead step by step. Plan your actions and develop a strategy to achieve your goals. Consider the tools available to you and how they can be used effectively.
+
 Always respond in the following way. Do not add reasoning or commentary except in the message field:
 The tool response must always begin with ```tool exactly.
 
