@@ -15,21 +15,32 @@ The agent runs a read-eval-print loop:
 ### Core pieces
 
 - `agent_core/agent.py` — `Agent` and `Memory` classes: the main loop, message history, and dispatch to tools.
+  - `Memory` keeps only the most recent 10 messages (including the system-injected tool results), so long-running sessions lose earlier context.
+  - Typing `/bye` at the input prompt exits the loop; `/clear` wipes memory without exiting.
+  - Calling the `terminate` tool also clears memory and ends the current exchange (the loop then prompts again for new input).
 - `agent_core/tool.py` — `Tool`: a simple `(name, arguments, description, action)` wrapper. `action` is any object with an `execute(args)` method.
-- `agent_core/tool_utils.py` — parses the ` ```tool ` fenced JSON block out of a model response.
-- `agent_core/system_message.py` — builds the system prompt, injecting the tool catalog and response format instructions.
+- `agent_core/tool_utils.py` — parses the ` ```tool ` fenced JSON block out of a model response (`parse_tool_response`) and prints the tool's `message`/`description` to the user (`print_tool_message`).
+- `agent_core/system_message.py` — builds the system prompt: injects the agent prompt, a note that the agent should not perform destructive actions (deleting files, hacking remote systems), the current OS/Python version, the required ` ```tool ` response format, an instruction to plan step by step before acting, and the tool catalog.
 - `agent_core/core_tools.py` — built-in tools always available to the agent:
   - `choose` — presents a list of options to the user and returns their selection (via `inquirer`).
-  - `message` — prints a message to the user.
+  - `confirm` — asks the user a Yes/No confirmation question.
+  - `message` — prints one or more message lines to the user.
+  - `plan` — prints a checklist of plan steps (used to make the model think step by step before acting).
+  - `question` — asks the user a free-text question and returns their answer.
   - `terminate` — ends the agent loop.
 - `tools.py` — project-specific tools passed in alongside the core tools:
-  - `terminal` — runs a shell command, after prompting the user to confirm.
-- `main.py` — entry point that wires up an `Agent` with a model config and the tool list, then calls `agent.run()`.
+  - `code` — prints a code snippet in a fenced block.
+  - `http` — performs an HTTP GET request against a URL and returns up to 4000 characters of the response body.
+  - `read_file` — reads a file and returns up to 4000 characters of its contents.
+  - `write_file` — writes content to a file.
+  - `terminal` — runs a shell command. `cat`/`ls` commands run without confirmation; everything else prompts the user to confirm (`yes`/`no`) via `inquirer` before running; `cat *` is explicitly rejected.
+- `main.py` — entry point: loads `OPENAI_API_KEY` (or other provider credentials) from a `.env` file via `python-dotenv`, joins any CLI arguments into an initial message, wires up an `Agent` with a model config, the tool list, an agent system prompt, and the initial message, then calls `agent.run()`.
 
 ## Requirements
 
 - Python 3.13
-- An LLM endpoint reachable by LiteLLM — the default config in `main.py` points at a local Ollama server
+- An LLM endpoint reachable by LiteLLM
+- A `.env` file in the project root with the credentials your chosen provider needs, e.g. `OPENAI_API_KEY=...` (loaded via `python-dotenv`; `.env` is gitignored)
 
 Install dependencies:
 
@@ -40,13 +51,18 @@ pip install -r Requirements.txt
 
 ## Usage
 
-Edit the model config in `main.py` to point at your LLM provider/endpoint:
+Edit the model config and agent prompt in `main.py` to point at your LLM provider/endpoint:
 
 ```python
 agent = Agent({
-    "model": "ollama/qwen2.5-coder:14b",
-    "api_base": "http://192.168.1.212:11434"
-}, tools)
+        # "model": "ollama/qwen2.5-coder:14b",
+        # "api_base": "http://192.168.1.212:11434"
+        "model": "gpt-4o-mini",
+    },
+    tools,
+    "You are a helpful technical and coding agent ...",
+    ' '.join(args) if len(args) > 0 else None
+)
 ```
 
 Then run:
@@ -55,7 +71,7 @@ Then run:
 python main.py
 ```
 
-You'll be prompted with `What do you want to do?`. The agent will respond by invoking tools (asking questions, printing messages, running terminal commands) until it calls `terminate`.
+Any command-line arguments are joined together and queued as the agent's first user message; otherwise you'll be prompted with `What do you want to do?`. The agent will respond by invoking tools (asking questions, printing messages, running terminal commands) until it calls `terminate`. Type `/bye` at any prompt to exit, or `/clear` to reset the conversation memory without exiting.
 
 ## Adding a new tool
 
@@ -67,6 +83,7 @@ The tool's `name`, `arguments`, and `description` are automatically included in 
 
 ## Notes
 
-- The `terminal` tool asks for interactive confirmation (`yes`/`no`) before running any command — it does not sandbox or validate the command otherwise, so treat it as trusted-user tooling only.
-- The `http` tool allows the agent to perform HTTP GET requests to specified URLs, facilitating data retrieval from web resources.
+- The `terminal` tool asks for interactive confirmation (`yes`/`no`) before running most commands — it does not sandbox or validate the command otherwise, so treat it as trusted-user tooling only.
+- The `read_file`, `write_file`, and `http` tools have no path/URL validation or sandboxing — they operate with the permissions of the running process.
 - Model responses that don't follow the ` ```tool ` fenced format are printed as-is and treated as having no tool call.
+- Conversation memory is capped at the last 10 messages, so very long sessions will lose earlier context.
