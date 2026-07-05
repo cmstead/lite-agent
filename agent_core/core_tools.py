@@ -53,6 +53,7 @@ class PlanAction:
         print("Plan:")
         for step in args:
             print(f"-[] {step}")
+        return "Execute plan"
 
 class TerminateAction:
     def execute(self, args):

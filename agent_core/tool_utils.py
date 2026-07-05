@@ -15,8 +15,10 @@ def parse_tool_response(response_message):
         return "Unable to process response. No tool response found in message."
 
 def print_tool_message(tool_response):
+    if type(tool_response) is str:
+        return "Cannot parse message."
+    
     if tool_response and tool_response.get("message"):
         print(f"Agent: {tool_response.get('message')}")
-        
-    if tool_response and tool_response.get("description"):
+    elif tool_response and tool_response.get("description"):
         print(f"Agent: {tool_response.get('description')}")

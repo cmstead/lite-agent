@@ -41,6 +41,11 @@ class Agent:
         return response.choices[0].message.content
 
     def handle_tool_response(self, tool_response, message):
+        if type(tool_response) is str:
+            print(f"Agent: {tool_response}")
+            self.memory.add_message("user", "Cannot parse message. Please try again.")
+            return
+
         if tool_response:
             tool = next((t for t in self.tools if t.name.lower() == tool_response.get("name").lower()), None)
             if tool:
@@ -74,6 +79,11 @@ class Agent:
                 self.memory.add_message("assistant", response_message)
 
                 tool_response = parse_tool_response(response_message)
+
+                if type(tool_response) is str:
+                    print(f"Agent: {tool_response}")
+                    self.memory.add_message("user", "Cannot parse message. Please try again.")
+                    continue
 
                 print_tool_message(tool_response)
 
