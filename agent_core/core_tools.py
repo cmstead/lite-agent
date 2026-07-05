@@ -7,10 +7,13 @@ class ChooseAction:
             print("No options provided.")
             return None
         
+        splitArgs = args[0].split(" ")
+        choices = splitArgs if len(splitArgs) > 1 else args
+
         prompts = [inquirer.List(
             'choice',
             message="Please choose from the following:",
-            choices=args
+            choices=choices
         )]
 
         responses = inquirer.prompt(prompts)
