@@ -1,4 +1,3 @@
-import webbrowser
 import inquirer
 from agent_core.tool import Tool
 
@@ -68,16 +67,6 @@ class TerminateAction:
         # Implementation for terminating the process
         pass
 
-class WebBrowserAction:
-    def execute(self, args):
-        if not args or len(args) == 0:
-            print("No URL provided.")
-            return None
-        
-        url = args[0]
-        webbrowser.open(url)
-        return f"Opened {url} in the default web browser."
-
 tools = [
     Tool(
         "choose", 
@@ -127,10 +116,4 @@ tools = [
         "Use this to end the agent process.", 
         TerminateAction()
     ),
-    Tool(
-        "webbrowser", 
-        ["url"], 
-        "Use this to open a URL in the default web browser.", 
-        WebBrowserAction()
-    )
 ]
