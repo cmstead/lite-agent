@@ -21,7 +21,7 @@ class TerminalAction:
         answers = inquirer.prompt(questions)
         if answers['confirm'] == 'yes':
             print(f"Executing `{args[0]}` ...")
-            return subprocess.run(args[0].split(' '), capture_output=False, text=True)
+            return subprocess.run(args[0].split(' '), capture_output=True, text=True)
         else:
             return "Action cancelled by user."
 
