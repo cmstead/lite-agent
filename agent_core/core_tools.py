@@ -1,3 +1,4 @@
+import webbrowser
 import inquirer
 from agent_core.tool import Tool
 
@@ -34,6 +35,13 @@ class ConfirmAction:
         responses = inquirer.prompt(prompts)
         return responses['confirmation'] if responses else None
 
+class HelpAction:
+    def execute(self, args):
+        print("Type whatever you want to do and I will try to help you. You can also use the following commands:")
+        print("Type /clear to clear and start a new chat.")
+        print("Type /exit to exit the program.")
+        return "Help message displayed. Return control to user prompt."
+
 class QuestionAction:
     def execute(self, args):
         return input(f"{args[0] if args else 'Question'}: ")
@@ -60,6 +68,16 @@ class TerminateAction:
         # Implementation for terminating the process
         pass
 
+class WebBrowserAction:
+    def execute(self, args):
+        if not args or len(args) == 0:
+            print("No URL provided.")
+            return None
+        
+        url = args[0]
+        webbrowser.open(url)
+        return f"Opened {url} in the default web browser."
+
 tools = [
     Tool(
         "choose", 
@@ -73,6 +91,13 @@ tools = [
         ["message"], 
         "Use this to ask the user for confirmation (Yes/No).", 
         ConfirmAction()
+    ),
+
+    Tool(
+        "help", 
+        [], 
+        "Use this to display a help message with available tools.", 
+        HelpAction()
     ),
 
     Tool(
@@ -102,4 +127,10 @@ tools = [
         "Use this to end the agent process.", 
         TerminateAction()
     ),
+    Tool(
+        "webbrowser", 
+        ["url"], 
+        "Use this to open a URL in the default web browser.", 
+        WebBrowserAction()
+    )
 ]

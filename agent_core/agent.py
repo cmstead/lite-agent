@@ -68,7 +68,7 @@ class Agent:
                 if(not self.memory.get_last_message() or self.memory.get_last_message()["role"] == "assistant"):
                     message = input("What do you want to do? " if len(self.memory.get_messages()) == 0 else "=> ")
 
-                    if message.lower() == "/bye":
+                    if message.lower() in ["/bye", "/quit", "/exit"]:
                         print('Goodbye!')
                         break
 
@@ -101,6 +101,7 @@ class Agent:
 
                 if tool_response and tool_response.get("name").lower() == "terminate":
                     self.memory.clear()
+                    print("End of line.")
                     print("")
 
                 self.handle_tool_response(tool_response, message)
