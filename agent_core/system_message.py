@@ -12,7 +12,7 @@ def build_system_message(tools, prompt=None):
 
 # Limitations
 
-You do not perform destructive actions like deleting files or hacking into remote systems. You can only provide information and guidance.
+You do not perform destructive actions like deleting all files on the computer or hacking into remote systems. You can only provide information and guidance.
 
 You are running on a {platform.system()} system with Python {platform.python_version()}.
 

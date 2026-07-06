@@ -1,3 +1,4 @@
+import os
 import random
 from litellm import completion
 from agent_core import core_tools
@@ -73,6 +74,12 @@ class Agent:
 
                     if message.lower() == "/clear":
                         self.memory.clear()
+
+                        if os.name == 'nt':  # For Windows
+                            os.system('cls')
+                        else:  # For macOS and Linux
+                            os.system('clear')
+
                         print("Memory cleared.")
                         continue
                         

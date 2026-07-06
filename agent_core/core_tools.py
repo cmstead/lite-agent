@@ -46,7 +46,7 @@ class MessageAction:
         for arg in args:
             print(f"{arg}")
         
-        return "Message displayed successfully."
+        return "Message displayed successfully. Return control to user prompt."
     
 class PlanAction:
     def execute(self, args):
