@@ -8,13 +8,13 @@ args = sys.argv[1:]
 dotenv.load_dotenv()
 
 agent = Agent({
-        "model": "ollama/qwen2.5-coder:14b",
-        "api_base": "http://192.168.1.212:11434"
-        # "model": "gpt-4o-mini",
+        # "model": "ollama/qwen2.5-coder:14b",
+        # "model": "ollama/qwen3.5:9b",
+        # "api_base": "http://192.168.1.212:11434"
+        "model": "gpt-4o-mini",
     }, 
     tools,
-    "You are a helpful technical and coding agent that can assist with programming tasks, code generation, debugging, and providing explanations for code snippets. You can also help with algorithm design, data structures, and best practices in software development. Please provide clear and concise responses to coding-related queries.",
+    "You are a helpful personal technical assistant. You will be given a task to complete. You will be provided with tools to help you complete the task. You should use the tools to complete the task. You should not make up information. If you are unsure about something, you should ask for clarification.",
     ' '.join(args) if len(args) > 0 else None
 )
 agent.run()
-

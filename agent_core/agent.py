@@ -108,5 +108,8 @@ class Agent:
 
             except Exception as e:
                 print(f"An error occurred: {e}")
-                break
+                print(f"Unable to continue current request. Please try again.")
+                self.memory.clear()
+                print("")
+                continue
 

@@ -48,8 +48,7 @@ class QuestionAction:
 class MessageAction:
     def execute(self, args):
         if not args or len(args) == 0:
-            print("No message provided.")
-            return "No message displayed."
+            return "No message data available. Message body is empty. Return control to user prompt."
         for arg in args:
             print(f"{arg}")
         
