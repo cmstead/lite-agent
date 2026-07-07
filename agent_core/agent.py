@@ -25,6 +25,7 @@ class Agent:
 
     def __init__(self, config, tools, agent_prompt=None, initial_message=None):
         self.memory = Memory()
+        self.loop_counter = 0
         self.config = config
         self.tools = tools + core_tools.tools
         self.system_message = build_system_message(self.tools, agent_prompt)
@@ -59,10 +60,19 @@ class Agent:
         else:
             self.memory.add_message("user", f"No valid tool response received. Please try again.")
 
+    def reset(self):
+        self.memory.clear()
+        self.loop_counter = 0
 
     def run(self):
         while True:
             try:
+                self.loop_counter += 1
+
+                if(self.loop_counter > 15):
+                    print("Loop limit reached. Exiting.")
+                    self.reset()
+
                 message = ""
 
                 if(not self.memory.get_last_message() or self.memory.get_last_message()["role"] == "assistant"):
@@ -73,7 +83,7 @@ class Agent:
                         break
 
                     if message.lower() == "/clear":
-                        self.memory.clear()
+                        self.reset()
 
                         if os.name == 'nt':  # For Windows
                             os.system('cls')
@@ -100,7 +110,7 @@ class Agent:
                 print_tool_message(tool_response)
 
                 if tool_response and tool_response.get("name").lower() == "terminate":
-                    self.memory.clear()
+                    self.reset()
                     print("End of line.")
                     print("")
 
@@ -109,7 +119,7 @@ class Agent:
             except Exception as e:
                 print(f"An error occurred: {e}")
                 print(f"Unable to continue current request. Please try again.")
-                self.memory.clear()
+                self.reset()
                 print("")
                 continue
 
