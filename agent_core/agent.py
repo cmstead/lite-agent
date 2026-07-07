@@ -20,6 +20,18 @@ class Memory:
 
     def get_last_message(self):
         return self.messages[-1] if self.messages else None
+    
+    def get_last_two_agent_messages(self):
+        agent_messages = []
+        message_length = len(self.messages)
+        index = -1
+
+        while message_length + index > 0 and len(agent_messages) < 2:
+            if self.messages[index].get("role") == "assistant":
+                agent_messages.append(self.messages[index].get("content"))
+            index -= 1
+
+        return agent_messages
 
 class Agent:
 
@@ -38,6 +50,7 @@ class Agent:
             model = self.config["model"],
             messages = [self.system_message] + self.memory.get_messages(),
             api_base = self.config["api_base"] if "api_base" in self.config else None,
+            api_key = self.config["api_key"] if "api_key" in self.config else None,
         )
 
         return response.choices[0].message.content
@@ -64,12 +77,33 @@ class Agent:
         self.memory.clear()
         self.loop_counter = 0
 
+    def clear_screen(self):
+        if os.name == 'nt':  # For Windows
+            os.system('cls')
+        else:  # For macOS and Linux
+            os.system('clear')
+
+    def is_duplicate_call(self):
+        agent_messages = self.memory.get_last_two_agent_messages()
+
+        if len(agent_messages) > 1:
+            try:
+                message1 = parse_tool_response(agent_messages[0])
+                message2 = parse_tool_response(agent_messages[1])
+
+                return message1.get("name") == message2.get("name") and message1.get("message") == message2.get("message")
+            except:
+                print("Unparseable response detected. Exiting.")
+                return True
+        
+        return False
+
     def run(self):
         while True:
             try:
                 self.loop_counter += 1
 
-                if(self.loop_counter > 15):
+                if self.loop_counter > 15:
                     print("Loop limit reached. Exiting.")
                     self.reset()
 
@@ -84,13 +118,7 @@ class Agent:
 
                     if message.lower() == "/clear":
                         self.reset()
-
-                        if os.name == 'nt':  # For Windows
-                            os.system('cls')
-                        else:  # For macOS and Linux
-                            os.system('clear')
-
-                        print("Memory cleared.")
+                        self.clear_screen()
                         continue
                         
                     self.memory.add_message("user", message)
@@ -99,6 +127,10 @@ class Agent:
                 response_message = self.send_message()
 
                 self.memory.add_message("assistant", response_message)
+
+                if self.is_duplicate_call():
+                    self.reset()
+                    continue
 
                 tool_response = parse_tool_response(response_message)
 
