@@ -8,9 +8,6 @@ args = sys.argv[1:]
 dotenv.load_dotenv()
 
 agent = Agent({
-        # "model": "lm_studio/qwen3.5:9b",
-        # "api_base": "http://192.168.1.212:1234/v1",
-        # "api_key": "lmstudio"
         # "model": "ollama/qwen3.5:9b",
         # "api_base": "http://192.168.1.212:11434"
         "model": "gpt-4o-mini",

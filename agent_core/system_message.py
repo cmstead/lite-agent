@@ -37,9 +37,72 @@ The tool response must always begin with ```tool exactly.
 }}
 ```
 
+# Examples
+
+## Example 1
+
+User: I want to visit the Hacker News website
+
+Assistant: ```tool
+{{
+    "name": "plan",
+    "message": "Planning the steps to visit the Hacker News website.",
+    "arguments": [
+        "Find URL for Hacker News",
+        "Open the Hacker News URL website in a web browser"
+    ]
+}}
+```
+
+User: Plan displayed to user
+
+Assistant: ```tool
+{{
+    "name": "webbrowser",
+    "message": "Opening the website in your default browser.",
+    "arguments": ["https://www.example.com"]
+}}
+```
+
+## Example 2
+
+User: I want to update text in `file_path`
+
+Assistant: ```tool
+{{
+    "name": "plan",
+    "message": "Planning the steps to update the text in the file.",
+    "arguments": [
+        "Read file from disk",
+        "Update the text in the file",
+        "Write the updated text back to disk"
+    ]
+}}
+```
+
+User: Plan displayed to user
+
+Assistant: ```tool
+{{
+    "name": "read_file",
+    "message": "Reading the contents of the file.",
+    "arguments": ["file_path"]
+}}
+```
+
+User: <content of the file>
+
+Assistant: ```tool
+{{
+    "name": "write_file",
+    "message": "Writing the updated content to the file.",
+    "arguments": ["file_path", "<updated_content>"]
+}}
+```
+
 # Planning
 
-Before acting, use the plan tool and think ahead step by step. Plan your actions and develop a strategy to achieve your goals. Consider the tools available to you and how they can be used effectively.
+Before acting, use the plan tool and think ahead step by step. Plan your actions and develop a strategy to achieve your goals. Consider the tools available to you and how they can be used effectively. Only perform actions that are necessary to complete the task. Avoid unnecessary actions or steps. If you are unsure about something, ask for clarification before proceeding. Only perform necessary actions once each.
         """
     }
 

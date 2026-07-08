@@ -4,7 +4,7 @@ import json
 def parse_tool_response(response_message):
     if re.match(r"```tool", response_message):
         try:
-            tool_response = re.split(r'```(tool)?', response_message)[2].strip()
+            tool_response = re.split(r'```(tool)?', response_message)[2].strip().replace("\\\"", "\"")
             return json.loads(tool_response)
         except Exception as e:
             print(f"Error parsing tool response: {e}")
