@@ -30,8 +30,8 @@ The agent runs a read-eval-print loop:
   - `terminate` — ends the agent loop.
 - `tools.py` — project-specific tools passed in alongside the core tools:
   - `code` — prints a code snippet in a fenced block.
-  - `http` — performs an HTTP GET request against a URL and returns up to 4000 characters of the response body.
-  - `read_file` — reads a file and returns up to 4000 characters of its contents.
+  - `http` — performs an HTTP GET request against a URL and returns the response body.
+  - `read_file` — reads a file and returns its contents.
   - `write_file` — writes content to a file.
   - `terminal` — runs a shell command. `cat`/`ls` commands run without confirmation; everything else prompts the user to confirm (`yes`/`no`) via `inquirer` before running; `cat *` is explicitly rejected.
 - `main.py` — entry point: loads `OPENAI_API_KEY` (or other provider credentials) from a `.env` file via `python-dotenv`, joins any CLI arguments into an initial message, wires up an `Agent` with a model config, the tool list, an agent system prompt, and the initial message, then calls `agent.run()`.

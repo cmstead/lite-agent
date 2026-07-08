@@ -33,7 +33,7 @@ class ReadFileAction:
         try:
             with open(args[0], 'r') as file:
                 content = file.read()
-                return content[:4000]
+                return content
         except Exception as e:
             return f"Error reading file: {e}"
 
@@ -57,7 +57,7 @@ class HttpAction:
         import requests
         print(f"Fetching {args[0]} ...")
         response = requests.get(args[0])
-        return response.text[:4000]
+        return response.text
 
 class WebBrowserAction:
     def execute(self, args):

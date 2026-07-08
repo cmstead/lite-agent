@@ -52,7 +52,7 @@ class MessageAction:
         for arg in args:
             print(f"{arg}")
         
-        return "Message displayed successfully. Return control to user prompt."
+        return None
     
 class PlanAction:
     def execute(self, args):
