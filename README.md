@@ -31,6 +31,7 @@ The agent runs a read-eval-print loop:
 - `tools.py` — project-specific tools passed in alongside the core tools:
   - `code` — prints a code snippet in a fenced block.
   - `http` — performs an HTTP GET request against a URL and returns the response body.
+  - `instructions` — Reads instructions from `~/.instructions/<name>-instructions.md` and executes them
   - `read_file` — reads a file and returns its contents.
   - `write_file` — writes content to a file.
   - `terminal` — runs a shell command. `cat`/`ls` commands run without confirmation; everything else prompts the user to confirm (`yes`/`no`) via `inquirer` before running; `cat *` is explicitly rejected.

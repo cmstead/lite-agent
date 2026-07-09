@@ -1,3 +1,4 @@
+from pathlib import Path
 import re
 import subprocess
 import webbrowser
@@ -69,6 +70,10 @@ class WebBrowserAction:
         webbrowser.open(url)
         return f"Opened {url} in the default web browser."
 
+class InstructionsAction:
+    def execute(self, args):
+        instructions = Path.home() / ".instructions" / (args[0])
+        return f"Read an execute instructions file: {instructions}"
 
 tools = [
     Tool(
@@ -82,6 +87,12 @@ tools = [
         ["url to request"], 
         "Use this to make HTTP GET requests.", 
         HttpAction()
+    ),
+    Tool(
+        "instructions", 
+        ["<name>-instructions.md"], 
+        "Use this to read and execute instructions from a file.", 
+        InstructionsAction()
     ),
     Tool(
         "read_file", 
