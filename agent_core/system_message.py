@@ -26,8 +26,7 @@ Tools available to you are:
 
 # Response Format
 
-Always respond in the following way. Do not add reasoning or commentary except in the message field:
-The tool response must always begin with ```tool exactly.
+Always respond with a tool response. Do not add reasoning or commentary except in the message field.
 
 ```tool
 {{
