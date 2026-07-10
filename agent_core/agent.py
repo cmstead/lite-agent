@@ -121,7 +121,10 @@ class Agent:
                         self.clear_screen()
                         continue
                         
-                    self.memory.add_message("user", message)
+                    if message.lower().startswith("/instructions"):
+                        self.memory.add_message("user", f"read and execute {message[len('/instructions '):]} instructions")
+                    else:
+                        self.memory.add_message("user", message)
 
                 print(f"{self.waiting_options[random.randrange(len(self.waiting_options))]}...")
                 response_message = self.send_message()

@@ -1,3 +1,4 @@
+from pathlib import Path
 import inquirer
 from agent_core.tool import Tool
 
@@ -40,6 +41,11 @@ class HelpAction:
         print("Type /clear to clear and start a new chat.")
         print("Type /exit to exit the program.")
         return "Help message displayed. Return control to user prompt."
+
+class InstructionsAction:
+    def execute(self, args):
+        instructions = Path.home() / ".instructions" / (args[0])
+        return f"Read an execute instructions file: {instructions}"
 
 class QuestionAction:
     def execute(self, args):
@@ -86,6 +92,13 @@ tools = [
         [], 
         "Use this to display a help message with available tools.", 
         HelpAction()
+    ),
+
+    Tool(
+        "instructions", 
+        ["<name>-instructions.md"], 
+        "Use this to read and execute instructions from a file.", 
+        InstructionsAction()
     ),
 
     Tool(
