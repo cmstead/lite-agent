@@ -1,9 +1,14 @@
 import os
 import random
+import readline
 from litellm import completion
 from agent_core import core_tools
 from agent_core.tool_utils import parse_tool_response, print_tool_message
 from agent_core.system_message import build_system_message
+
+# Keep track of input history across prompts
+readline.set_auto_history(True)
+
 class Memory:
     def __init__(self):
         self.messages = []
