@@ -3,50 +3,23 @@ import random
 import readline
 from litellm import completion
 from agent_core import core_tools
+from agent_core.LoopCounter import LoopCounter
+from agent_core.Memory import Memory
 from agent_core.tool_utils import parse_tool_response, print_tool_message
 from agent_core.system_message import build_system_message
 
 # Keep track of input history across prompts
 readline.set_auto_history(True)
 
-class Memory:
-    def __init__(self):
-        self.messages = []
-
-    def clear(self):
-        self.messages = []
-
-    def add_message(self, role, content):
-        self.messages.append({"role": role, "content": content})
-        self.messages = self.messages[-10:]
-    
-    def get_messages(self):
-        return self.messages
-
-    def get_last_message(self):
-        return self.messages[-1] if self.messages else None
-    
-    def get_last_two_agent_messages(self):
-        agent_messages = []
-        message_length = len(self.messages)
-        index = -1
-
-        while message_length + index > 0 and len(agent_messages) < 2:
-            if self.messages[index].get("role") == "assistant":
-                agent_messages.append(self.messages[index].get("content"))
-            index -= 1
-
-        return agent_messages
-
 class Agent:
 
     def __init__(self, config, tools, agent_prompt=None, initial_message=None):
         self.memory = Memory()
-        self.loop_counter = 0
+        self.loop_counter = LoopCounter()
         self.config = config
         self.tools = tools + core_tools.tools
         self.system_message = build_system_message(self.tools, agent_prompt)
-        self.waiting_options = ["cogitating", "thinking", "processing", "pondering", "analyzing", "evaluating", "considering", "reflecting", "deliberating"]
+        self.waiting_options = ["cogitating", "pondering", "analyzing", "evaluating", "considering", "reflecting", "deliberating", "percolating"]
         if initial_message:
             self.memory.add_message("user", initial_message)
 
@@ -80,7 +53,7 @@ class Agent:
 
     def reset(self):
         self.memory.clear()
-        self.loop_counter = 0
+        self.loop_counter.reset()
 
     def clear_screen(self):
         if os.name == 'nt':  # For Windows
@@ -104,17 +77,21 @@ class Agent:
         return False
 
     def run(self):
+        self.clear_screen()
+
         while True:
             try:
-                self.loop_counter += 1
+                self.loop_counter.increment()
 
-                if self.loop_counter > 15:
+                if self.loop_counter.has_exceeded_limit():
                     print("Loop limit reached. Exiting.")
                     self.reset()
 
                 message = ""
 
                 if(not self.memory.get_last_message() or self.memory.get_last_message()["role"] == "assistant"):
+                    self.loop_counter.reset()
+
                     message = input("What do you want to do? " if len(self.memory.get_messages()) == 0 else "=> ")
 
                     if message.lower() in ["/bye", "/quit", "/exit"]:
